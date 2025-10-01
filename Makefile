@@ -1,8 +1,11 @@
 NAME = philo
 CC = gcc
-CFILES =  	main.c \
-			init.c \
-			check_user_input.c
+CFILES =  	src/main.c \
+			src/utils.c \
+			src/check_user_input.c \
+			src/program_stats_checking.c \
+			src/philo_actions.c \
+			src/init.c \
 
 OFILES = $(CFILES:.c=.o)
 

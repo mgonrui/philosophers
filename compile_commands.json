@@ -1,0 +1,26 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-o",
+      "src/philo_actions.o",
+      "src/philo_actions.c"
+    ],
+    "directory": "/home/deckard/42projects/philosophers",
+    "file": "/home/deckard/42projects/philosophers/src/philo_actions.c",
+    "output": "/home/deckard/42projects/philosophers/src/philo_actions.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-o",
+      "src/init.o",
+      "src/init.c"
+    ],
+    "directory": "/home/deckard/42projects/philosophers",
+    "file": "/home/deckard/42projects/philosophers/src/init.c",
+    "output": "/home/deckard/42projects/philosophers/src/init.o"
+  }
+]
