@@ -4,6 +4,66 @@
       "/usr/bin/gcc",
       "-c",
       "-o",
+      "src/main.o",
+      "src/main.c"
+    ],
+    "directory": "/home/deckard/42projects/philosophers",
+    "file": "/home/deckard/42projects/philosophers/src/main.c",
+    "output": "/home/deckard/42projects/philosophers/src/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-o",
+      "src/utils.o",
+      "src/utils.c"
+    ],
+    "directory": "/home/deckard/42projects/philosophers",
+    "file": "/home/deckard/42projects/philosophers/src/utils.c",
+    "output": "/home/deckard/42projects/philosophers/src/utils.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-o",
+      "src/time_utils.o",
+      "src/time_utils.c"
+    ],
+    "directory": "/home/deckard/42projects/philosophers",
+    "file": "/home/deckard/42projects/philosophers/src/time_utils.c",
+    "output": "/home/deckard/42projects/philosophers/src/time_utils.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-o",
+      "src/check_user_input.o",
+      "src/check_user_input.c"
+    ],
+    "directory": "/home/deckard/42projects/philosophers",
+    "file": "/home/deckard/42projects/philosophers/src/check_user_input.c",
+    "output": "/home/deckard/42projects/philosophers/src/check_user_input.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-o",
+      "src/program_stats_checking.o",
+      "src/program_stats_checking.c"
+    ],
+    "directory": "/home/deckard/42projects/philosophers",
+    "file": "/home/deckard/42projects/philosophers/src/program_stats_checking.c",
+    "output": "/home/deckard/42projects/philosophers/src/program_stats_checking.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-o",
       "src/philo_actions.o",
       "src/philo_actions.c"
     ],
