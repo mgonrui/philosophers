@@ -1,0 +1,4 @@
+vgcore*
+.cache/
+all
+helgrind

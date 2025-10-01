@@ -33,9 +33,8 @@ typedef struct s_program_data
 	long			 time_to_eat;
 	long			 max_nmeals;
 	pthread_mutex_t *forks;
-	pthread_mutex_t	 read;
-	pthread_mutex_t	 write;
 	pthread_mutex_t	 eat;
+	pthread_mutex_t	 print;
 	pthread_mutex_t	 death;
 } t_program_data;
 
@@ -44,7 +43,7 @@ typedef struct s_philo
 	t_program_data	*data;
 	unsigned int	 id;
 	bool			 is_dead;
-	unsigned int	 last_meal_time;
+	long			 last_meal_time;
 	unsigned int	 nmeals_eaten;
 	pthread_t		 thread;
 	pthread_mutex_t *r_fork;
@@ -73,6 +72,7 @@ int	 start_philo_threads(t_program_data *data);
 bool has_someone_died(t_philo *philo);
 bool checker_philos(t_program_data *data);
 void loop(t_program_data *data);
+void cleanup(t_program_data *data);
 
 // philo_actions
 void *philo_actions(void *vphilo);

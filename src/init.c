@@ -3,7 +3,6 @@
 
 void init_program_data(t_program_data *program_data, char **argv)
 {
-	program_data->start_time = time_current();
 	program_data->threads_running = 0;
 	program_data->someone_died = false;
 	program_data->nphilos = ft_mini_atol(argv[1]);
@@ -14,12 +13,7 @@ void init_program_data(t_program_data *program_data, char **argv)
 		program_data->max_nmeals = ft_mini_atol(argv[5]);
 	else
 		program_data->max_nmeals = -1;
-	if (pthread_mutex_init(&program_data->read, NULL) != 0)
-	{
-		print_error("error initing mutex", 3);
-		return;
-	}
-	if (pthread_mutex_init(&program_data->write, NULL))
+	if (pthread_mutex_init(&program_data->print, NULL))
 	{
 		print_error("error initing mutex", 3);
 		return;
@@ -34,6 +28,7 @@ void init_program_data(t_program_data *program_data, char **argv)
 		print_error("error initing mutex", 3);
 		return;
 	}
+	program_data->start_time = time_current();
 
 	return;
 }
@@ -53,7 +48,7 @@ int init_philos(t_program_data *program_data)
 			return (print_error("No memory left to alloc", 2));
 		program_data->philos[i]->id = i + 1;
 		program_data->philos[i]->nmeals_eaten = 0;
-		program_data->philos[i]->last_meal_time = time_current();
+		program_data->philos[i]->last_meal_time = program_data->start_time;
 		program_data->philos[i]->data = program_data;
 		if (pthread_mutex_init(&program_data->philos[i]->mutex, NULL))
 			return (print_error("Failed to init mutex", 2));
@@ -85,29 +80,6 @@ int init_forks(t_program_data *program_data)
 	return 0;
 }
 
-void ft_destroy_forklst(t_program_data *data)
-{
-	int i;
-
-	i = 0;
-	while (i < data->nphilos)
-	{
-		pthread_mutex_destroy(&data->forks[i]);
-		i++;
-	}
-}
-
-void ft_destroy(t_program_data *data) // understood
-{
-	if (data->forks)
-		ft_destroy_forklst(data);
-	pthread_mutex_destroy(&data->death);
-	pthread_mutex_destroy(&data->eat);
-	pthread_mutex_destroy(&data->read);
-	pthread_mutex_destroy(&data->write);
-	// ft_free_prog(table);
-}
-
 int start_philo_threads(t_program_data *data)
 {
 	int		  i;
@@ -115,11 +87,11 @@ int start_philo_threads(t_program_data *data)
 
 	i = 0;
 	if (pthread_create(&monitor, NULL, &ft_monitor, data))
-		ft_destroy(data);
+		cleanup(data);
 	while (i < data->nphilos)
 	{
 		if (pthread_create(&data->philos[i]->thread, NULL, &philo_actions, data->philos[i]))
-			ft_destroy(data);
+			cleanup(data);
 		i++;
 	}
 	pthread_join(monitor, NULL);

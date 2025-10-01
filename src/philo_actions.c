@@ -4,14 +4,28 @@
 
 void print_action(t_philo *philo, t_actions action)
 {
-	pthread_mutex_lock(&philo->data->read);
-	pthread_mutex_lock(&philo->data->write);
+
+	pthread_mutex_lock(&philo->data->death);
+	if (philo->data->someone_died == true)
+	{
+		pthread_mutex_unlock(&philo->data->death);
+		return;
+	}
+
 	if (action == DIE)
 	{
 		philo->data->someone_died = true;
+		pthread_mutex_unlock(&philo->data->death);
+
+		pthread_mutex_lock(&philo->data->print);
 		printf("%ld %d died\n", time_passed(philo->data->start_time), philo->id);
+		pthread_mutex_unlock(&philo->data->print);
+		return;
 	}
-	else if (action == GRAB_FORK)
+	pthread_mutex_unlock(&philo->data->death);
+
+	pthread_mutex_lock(&philo->data->print);
+	if (action == GRAB_FORK)
 		printf("%ld %d has taken a fork\n", time_passed(philo->data->start_time), philo->id);
 	else if (action == EAT)
 		printf("%ld %d is eating\n", time_passed(philo->data->start_time), philo->id);
@@ -19,8 +33,7 @@ void print_action(t_philo *philo, t_actions action)
 		printf("%ld %d is thinking\n", time_passed(philo->data->start_time), philo->id);
 	else if (action == SLEEP)
 		printf("%ld %d is sleeping\n", time_passed(philo->data->start_time), philo->id);
-	pthread_mutex_unlock(&philo->data->read);
-	pthread_mutex_unlock(&philo->data->write);
+	pthread_mutex_unlock(&philo->data->print);
 }
 
 void ft_grab_forks(t_philo *p)
@@ -43,12 +56,13 @@ void ft_grab_forks(t_philo *p)
 
 void action_eat(t_philo *philo)
 {
+
 	ft_grab_forks(philo);
 	print_action(philo, EAT);
-	pthread_mutex_lock(&philo->mutex);
+	pthread_mutex_lock(&philo->data->eat);
 	philo->last_meal_time = time_current();
 	philo->nmeals_eaten++;
-	pthread_mutex_unlock(&philo->mutex);
+	pthread_mutex_unlock(&philo->data->eat);
 	my_usleep(philo->data->time_to_eat);
 	pthread_mutex_unlock(philo->r_fork);
 	pthread_mutex_unlock(philo->l_fork);
@@ -71,7 +85,7 @@ bool has_someone_died(t_philo *philo)
 	pthread_mutex_lock(&philo->data->death);
 	if (philo->data->someone_died == true)
 	{
-		pthread_mutex_unlock(&philo->mutex);
+		pthread_mutex_unlock(&philo->data->death);
 		return (true);
 	}
 	pthread_mutex_unlock(&philo->data->death);
@@ -83,7 +97,6 @@ void *philo_actions(void *vphilo)
 	t_philo *philo;
 
 	philo = vphilo;
-	printf("PHILO N%d CREATED\n", philo->id);
 	if (philo->id % 2 == 0)
 		my_usleep(10);
 	if (philo->data->nphilos == 1)

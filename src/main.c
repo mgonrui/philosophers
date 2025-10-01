@@ -13,40 +13,52 @@ static void ft_thread_join(t_program_data *data)
 	}
 }
 
-bool are_all_threads_running(t_program_data *data, long *threads, long philo_nbr)
+void cleanup(t_program_data *data) // understood
 {
-	bool ret;
-	ret = false;
+	int i;
 
-	pthread_mutex_lock(&data->read);
-	if (*threads == philo_nbr)
-		ret = true;
-	pthread_mutex_unlock(&data->read);
-	return ret;
+	if (data->forks)
+	{
+		i = 0;
+		while (i < data->nphilos)
+			pthread_mutex_destroy(&data->forks[i++]);
+	}
+	pthread_mutex_destroy(&data->death);
+	pthread_mutex_destroy(&data->eat);
+	pthread_mutex_destroy(&data->print);
+
+	i = 0;
+	while (i < data->nphilos)
+		free(data->philos[i++]);
+	free(data->philos);
+	free(data->forks);
+	free(data);
 }
 
 int main(int argc, char **argv)
 {
-	t_program_data data;
+	t_program_data *data;
 
 	if (check_input(argc, argv))
 		return 1;
-	init_program_data(&data, argv);
-	if (init_philos(&data) != 0)
+	data = malloc(sizeof(t_program_data));
+	if (!data)
+	{
+		print_error("Failed to allocate program data", 2);
+		return 1;
+	}
+	init_program_data(data, argv);
+	if (init_philos(data) != 0)
 	{
 		print_error("error initing philos", 2);
 		return 1;
 	}
-	if (init_forks(&data) != 0)
+	if (init_forks(data) != 0)
 	{
 		print_error("error initing forks", 2);
 		return 1;
 	}
-	// if (has_someone_died(&data) == false)
-	// {
-	start_philo_threads(&data);
-	// }
-	usleep(100);
-	// ft_thread_join(&data);
+	start_philo_threads(data);
+	cleanup(data);
 	return 0;
 }
