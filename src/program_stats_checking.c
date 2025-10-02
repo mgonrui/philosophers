@@ -1,61 +1,75 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   program_stats_checking.c                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mariogo2 <mariogo2@student.42malaga.com>   +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/02 22:49:23 by mariogo2          #+#    #+#             */
+/*   Updated: 2025/10/02 23:51:24 by mariogo2         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
-bool philo_is_dead(t_program_data *data)
+bool	philo_is_dead(t_data *data)
 {
-	int i = 0;
+	int		i;
+	long	time_since_meal;
+
+	i = 0;
 	while (i < data->nphilos)
 	{
 		pthread_mutex_lock(&data->eat);
-		long time_since_meal = time_current() - data->philos[i]->last_meal_time;
+		time_since_meal = time_current() - data->philos[i]->last_meal_time;
+		pthread_mutex_unlock(&data->eat);
 		if (time_since_meal >= data->time_to_die)
 		{
 			print_action(data->philos[i], DIE);
-			pthread_mutex_lock(&data->death);
-			data->someone_died = true;
-			pthread_mutex_unlock(&data->death);
-			pthread_mutex_unlock(&data->eat);
-			return true;
+			pthread_mutex_lock(&data->mtx_end);
+			data->end_program = true;
+			pthread_mutex_unlock(&data->mtx_end);
+			return (true);
 		}
-		pthread_mutex_unlock(&data->eat);
 		i++;
 	}
-	return false;
+	return (false);
 }
 
-bool all_philos_are_full(t_program_data *data)
+bool	all_philos_are_full(t_data *data)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (i < data->nphilos)
 	{
 		if (data->philos[i]->nmeals_eaten < data->max_nmeals)
-			return false;
+			return (false);
 		i++;
 	}
-	return true;
+	return (true);
 }
 
-void *ft_monitor(void *vdata)
+void	*arbiter(void *vdata)
 {
-	t_program_data *data = (t_program_data *)vdata;
+	t_data	*data;
 
+	data = (t_data *)vdata;
 	while (true)
 	{
+		usleep(1000);
 		if (philo_is_dead(data))
-			return NULL;
-
+			return (NULL);
 		if (data->max_nmeals != -1)
 		{
 			pthread_mutex_lock(&data->eat);
-			bool all_full = all_philos_are_full(data);
-			if (all_full)
+			if (all_philos_are_full(data) == true)
 			{
-				pthread_mutex_lock(&data->death);
-				data->someone_died = true;
-				pthread_mutex_unlock(&data->death);
+				pthread_mutex_lock(&data->mtx_end);
+				data->end_program = true;
+				pthread_mutex_unlock(&data->mtx_end);
 				pthread_mutex_unlock(&data->eat);
-				return NULL;
+				return (NULL);
 			}
 			pthread_mutex_unlock(&data->eat);
 		}

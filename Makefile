@@ -7,23 +7,31 @@ CFILES =  	src/main.c \
 			src/program_stats_checking.c \
 			src/philo_actions.c \
 			src/init.c \
+			src/routine.c \
 
 OFILES = $(CFILES:.c=.o)
+CFLAGS		= -Wall -Wextra -Werror
 
 %.o : %.c philo.h
-	$(CC) -Wall -Wextra -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 all: $(NAME)
 
 $(NAME): $(OFILES)
-	$(CC) -Wall -Wextra $(OFILES) -o $(NAME)
+	$(CC) $(CFLAGS) $(OFILES) -o $(NAME)
 
 clean:
 	@ rm -f $(OFILES)
 
 fclean: clean
 	@ rm -f $(NAME)
-
+#
+# saddress: CFLAGS += -fsanitize=address -g
+# saddress: re
+#
+# # Thread Sanitizer (data races)
+# sthread: CFLAGS += -fsanitize=thread -g
+# sthread: re
 re: fclean all
 
 .PHONY: all clean fclean re bonus
